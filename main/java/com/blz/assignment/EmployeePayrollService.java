@@ -43,16 +43,22 @@ public class EmployeePayrollService {
 			new EmployeePayrollFileIOService().writeData(employeePayrollList);
 
 	}
-	
+
 	public void printData(IOService ioService) {
-		if(ioService.equals(IOService.FILE_IO))
+		if (ioService.equals(IOService.FILE_IO))
 			new EmployeePayrollFileIOService().printData();
 	}
 
 	public long countEntries(IOService ioService) {
-		if(ioService.equals(IOService.FILE_IO))
+		if (ioService.equals(IOService.FILE_IO))
 			return new EmployeePayrollFileIOService().countEntries();
 		return 0;
+	}
+
+	public List<EmployeePayrollData> readPayrollData(IOService ioService) {
+		if (ioService.equals(IOService.FILE_IO))
+			this.employeePayrollList = new EmployeePayrollFileIOService().readData();
+		return employeePayrollList;
 	}
 
 }

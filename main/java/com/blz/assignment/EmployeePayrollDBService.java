@@ -23,7 +23,7 @@ public class EmployeePayrollDBService {
 		String sql = "SELECT * FROM employee_payroll2;";
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
 		try (Connection connection = this.getConnection();) {
-			Statement statement = connection.createStatement();
+			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet resultSet = statement.executeQuery(sql);
 			while (resultSet.next()) {
 				int id = resultSet.getInt("id");
@@ -39,14 +39,14 @@ public class EmployeePayrollDBService {
 	}
 
 	public int updateEmployeeData(String name, Double salary) {
-		return this.updateEmployeeDataUsingStatement(name, salary);
+		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
 	}
 
-	private int updateEmployeeDataUsingStatement(String name, Double salary) {
+	private int updateEmployeeDataUsingPreparedStatement(String name, Double salary) {
 		String sql = String.format("update employee_payroll2 set salary = %.2f where name='%s';", salary, name);
 		try (Connection connection = this.getConnection();) {
-			Statement statement = connection.createStatement();
-			return statement.executeUpdate(sql);
+			PreparedStatement prepareStatement = connection.prepareStatement(sql);
+			return prepareStatement.executeUpdate(sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

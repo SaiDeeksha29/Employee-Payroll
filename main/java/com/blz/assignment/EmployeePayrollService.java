@@ -1,5 +1,6 @@
 package com.blz.assignment;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class EmployeePayrollService {
@@ -85,6 +86,12 @@ public class EmployeePayrollService {
 		employeePayrollData = this.employeePayrollList.stream()
 				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
 		return employeePayrollData;
+	}
+
+	public List<EmployeePayrollData> readPayrollDataForRange(IOService ioService, LocalDate startDate, LocalDate endDate) {
+		if (ioService.equals(IOService.DB_IO))
+			this.employeePayrollList = employeePayrollDBService.readData();
+		return employeePayrollList;
 	}
 
 }

@@ -5,6 +5,8 @@ import org.junit.Assert;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import org.junit.Test;
 import com.blz.assignment.EmployeePayrollService.IOService;
 
@@ -69,5 +71,12 @@ public class EmployeePayrollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollDataForRange(IOService.DB_IO,startDate,endDate);
 		Assert.assertEquals(3, employeePayrollData.size());
+	}
+	
+	@Test
+	public void givenEmployeePayrollData_ShouldMatchAverageSalary_GroupByGender() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		Map<String,Double> employeePayrollData = employeePayrollService.readPayrollDataForAvgSalary(IOService.DB_IO);
+		Assert.assertEquals(2, employeePayrollData.size());
 	}
 }

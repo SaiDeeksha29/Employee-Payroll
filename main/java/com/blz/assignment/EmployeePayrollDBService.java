@@ -97,6 +97,23 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollList;
 	}
+	
+	public Map<String,Double> getAverageSalaryByGender(){
+		String sql="SELECT gender,AVG(salary) as avg_salary FROM employee_payroll2 GROUP BY gender;";
+		Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
+		try (Connection connection = this.getConnection();) {
+			PreparedStatement prepareStatement = connection.prepareStatement(sql);
+			ResultSet resultSet = prepareStatement.executeQuery(sql);
+			while(resultSet.next()) {
+				String gender=resultSet.getString("gender");
+				double salary =resultSet.getDouble("avg_salary");
+				genderToAverageSalaryMap.put(gender,salary);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return genderToAverageSalaryMap;
+	}
 
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet resultSet) {
 		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();

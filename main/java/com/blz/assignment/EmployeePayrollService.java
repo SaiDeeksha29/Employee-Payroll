@@ -11,11 +11,17 @@ public class EmployeePayrollService {
 
 	private List<EmployeePayrollData> employeePayrollList;
 	private EmployeePayrollDBService employeePayrollDBService;
+	private Map<String, Double> employeePayrollMap;
 
 	public EmployeePayrollService() {
-		employeePayrollDBService=EmployeePayrollDBService.getInstance();
+		employeePayrollDBService = EmployeePayrollDBService.getInstance();
 	}
-	
+
+	public EmployeePayrollService(Map<String, Double> employeePayrollMap) {
+		this();
+		this.employeePayrollMap = employeePayrollMap;
+	}
+
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
 		this();
 		this.employeePayrollList = employeePayrollList;
@@ -77,10 +83,10 @@ public class EmployeePayrollService {
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayrollData> employeePayrollDataList =employeePayrollDBService.getEmployeePayrollData(name);
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
-	
+
 	private EmployeePayrollData getEmployeePayrollData(String name) {
 		EmployeePayrollData employeePayrollData;
 		employeePayrollData = this.employeePayrollList.stream()
@@ -88,10 +94,17 @@ public class EmployeePayrollService {
 		return employeePayrollData;
 	}
 
-	public List<EmployeePayrollData> readPayrollDataForRange(IOService ioService, LocalDate startDate, LocalDate endDate) {
+	public List<EmployeePayrollData> readPayrollDataForRange(IOService ioService, LocalDate startDate,
+			LocalDate endDate) {
 		if (ioService.equals(IOService.DB_IO))
-			this.employeePayrollList = employeePayrollDBService.readData();
+			this.employeePayrollList = employeePayrollDBService.getEmployeeForDateRange(startDate, endDate);
 		return employeePayrollList;
+	}
+
+	public Map<String, Double> readPayrollDataForAvgSalary(IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.employeePayrollMap = employeePayrollDBService.getAverageSalaryByGender();
+		return employeePayrollMap;
 	}
 
 }

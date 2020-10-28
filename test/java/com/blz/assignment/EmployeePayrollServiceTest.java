@@ -3,9 +3,7 @@ package com.blz.assignment;
 import org.junit.Assert;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.Test;
-
 import com.blz.assignment.EmployeePayrollService.IOService;
 
 public class EmployeePayrollServiceTest {
@@ -43,5 +41,12 @@ public class EmployeePayrollServiceTest {
 	public void givenFileOnReadingFileShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> entries = employeePayrollService.readPayrollData(IOService.FILE_IO);
+	}
+	
+	@Test
+	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
+		Assert.assertEquals(3, employeePayrollData.size());
 	}
 }

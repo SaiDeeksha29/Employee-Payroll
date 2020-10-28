@@ -42,11 +42,20 @@ public class EmployeePayrollServiceTest {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> entries = employeePayrollService.readPayrollData(IOService.FILE_IO);
 	}
-	
+
 	@Test
 	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
 		Assert.assertEquals(3, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldMatch() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
+		employeePayrollService.updateEmployeeSalary("Terisa",3000000.00);
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+		Assert.assertTrue(result);
 	}
 }

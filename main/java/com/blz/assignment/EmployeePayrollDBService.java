@@ -54,17 +54,6 @@ public class EmployeePayrollDBService {
 		return 0;
 	}
 
-	private Connection getConnection() throws SQLException {
-		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
-		String userName = "root";
-		String password = "satyasai1";
-		Connection connection;
-		System.out.println("Connecting to database: " + jdbcURL);
-		connection = DriverManager.getConnection(jdbcURL, userName, password);
-		System.out.println("Connection successful: " + connection);
-		return connection;
-	}
-
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) {
 		List<EmployeePayrollData> employeePayrollList = null;
 		if (this.employeePayrollDataStatement == null)
@@ -97,17 +86,17 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollList;
 	}
-	
-	public Map<String,Double> getAverageSalaryByGender(){
-		String sql="SELECT gender,AVG(salary) as avg_salary FROM employee_payroll2 GROUP BY gender;";
+
+	public Map<String, Double> getAverageSalaryByGender() {
+		String sql = "SELECT gender,AVG(salary) as avg_salary FROM employee_payroll2 GROUP BY gender;";
 		Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
 		try (Connection connection = this.getConnection();) {
 			PreparedStatement prepareStatement = connection.prepareStatement(sql);
 			ResultSet resultSet = prepareStatement.executeQuery(sql);
-			while(resultSet.next()) {
-				String gender=resultSet.getString("gender");
-				double salary =resultSet.getDouble("avg_salary");
-				genderToAverageSalaryMap.put(gender,salary);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				double salary = resultSet.getDouble("avg_salary");
+				genderToAverageSalaryMap.put(gender, salary);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -139,6 +128,38 @@ public class EmployeePayrollDBService {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+		int employeeId = -1;
+		EmployeePayrollData employeePayrollData = null;
+		String sql = String.format(
+				"INSERT INTO employee_payroll2(name,gender,salary,start) VALUES ('%s','%s','%s','%s')", name, gender,
+				salary, Date.valueOf(startDate));
+		try (Connection connection = this.getConnection();) {
+			PreparedStatement preparedstatement = connection.prepareStatement(sql);
+			int rowAfftected = preparedstatement.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+			if (rowAfftected == 1) {
+				ResultSet resultSet = preparedstatement.getGeneratedKeys();
+				if (resultSet.next())
+					employeeId = resultSet.getInt(1);
+			}
+			employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollData;
+	}
+
+	private Connection getConnection() throws SQLException {
+		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
+		String userName = "root";
+		String password = "satyasai1";
+		Connection connection;
+		System.out.println("Connecting to database: " + jdbcURL);
+		connection = DriverManager.getConnection(jdbcURL, userName, password);
+		System.out.println("Connection successful: " + connection);
+		return connection;
 	}
 
 }

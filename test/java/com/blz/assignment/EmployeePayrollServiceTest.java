@@ -59,7 +59,7 @@ public class EmployeePayrollServiceTest {
 	public void givenEmployeePayrollInNormalisedDB_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
-		Assert.assertEquals(5, employeePayrollData.size());
+		Assert.assertEquals(6, employeePayrollData.size());
 	}
 
 	@Test
@@ -80,7 +80,17 @@ public class EmployeePayrollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollDataForRange(IOService.DB_IO,
 				startDate, endDate);
-		Assert.assertEquals(5, employeePayrollData.size());
+		Assert.assertEquals(6, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenNewEmployeeInNormalised_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readPayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayrollNormalised("Mark", "M", 3, "Capgemini", 5000000.00,
+				LocalDate.now());
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		Assert.assertTrue(result);
 	}
 
 }

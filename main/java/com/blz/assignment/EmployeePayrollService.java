@@ -10,11 +10,13 @@ public class EmployeePayrollService {
 	}
 
 	private List<EmployeePayrollData> employeePayrollList;
-	private EmployeePayrollDBService employeePayrollDBService;
 	private Map<String, Double> employeePayrollMap;
+	private EmployeePayrollDBService employeePayrollDBService;
+	private EmployeePayrollDBServiceNormalised employeePayrollDBServiceNormalised;
 
 	public EmployeePayrollService() {
 		employeePayrollDBService = EmployeePayrollDBService.getInstance();
+		employeePayrollDBServiceNormalised = EmployeePayrollDBServiceNormalised.getInstance();
 	}
 
 	public EmployeePayrollService(Map<String, Double> employeePayrollMap) {
@@ -25,14 +27,6 @@ public class EmployeePayrollService {
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
 		this();
 		this.employeePayrollList = employeePayrollList;
-	}
-
-	public static void main(String[] args) {
-		ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<>();
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
-		Scanner consoleInputReader = new Scanner(System.in);
-		employeePayrollService.readEmployeePayrollData(consoleInputReader);
-		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
 	}
 
 	private void readEmployeePayrollData(Scanner consoleInputReader) {
@@ -69,12 +63,12 @@ public class EmployeePayrollService {
 		if (ioService.equals(IOService.FILE_IO))
 			this.employeePayrollList = new EmployeePayrollFileIOService().readData();
 		else if (ioService.equals(IOService.DB_IO))
-			this.employeePayrollList = employeePayrollDBService.readData();
+			this.employeePayrollList = employeePayrollDBServiceNormalised.readData();
 		return employeePayrollList;
 	}
 
 	public void updateEmployeeSalary(String name, double salary) {
-		int result = employeePayrollDBService.updateEmployeeData(name, salary);
+		int result = employeePayrollDBServiceNormalised.updateEmployeeData(name, salary);
 		if (result == 0)
 			return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
@@ -83,7 +77,8 @@ public class EmployeePayrollService {
 	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBServiceNormalised
+				.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
@@ -110,4 +105,13 @@ public class EmployeePayrollService {
 	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
 		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayrollUC8(name, salary, startDate, gender));
 	}
+
+	public static void main(String[] args) {
+		ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
+		Scanner consoleInputReader = new Scanner(System.in);
+		employeePayrollService.readEmployeePayrollData(consoleInputReader);
+		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
+	}
+
 }

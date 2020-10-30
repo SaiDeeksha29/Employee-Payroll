@@ -48,22 +48,6 @@ public class EmployeePayrollServiceTest {
 	}
 
 	@Test
-	public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchEmployeeCount() {
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
-		Assert.assertEquals(4, employeePayrollData.size());
-	}
-
-	@Test
-	public void givenNewSalaryForEmployee_WhenUpdated_ShouldMatch() throws EmployeePayrollException {
-		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
-		employeePayrollService.updateEmployeeSalary("Terisa", 3000000.00);
-		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
-		Assert.assertTrue(result);
-	}
-
-	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readPayrollData(IOService.DB_IO);
@@ -83,11 +67,19 @@ public class EmployeePayrollServiceTest {
 	}
 
 	@Test
-	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException {
+	public void givenEmployeePayrollInNormalisedDB_WhenRetrieved_ShouldMatchEmployeeCount() {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
-		employeePayrollService.readPayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Mark", 5000000.00, LocalDate.now(), "M");
-		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
+		Assert.assertEquals(5, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenNewSalaryForEmployeeInNormalisedDB_WhenUpdated_ShouldSyncWithDatabase()
+			throws EmployeePayrollException {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollData(IOService.DB_IO);
+		employeePayrollService.updateEmployeeSalary("Terisa", 3000000.00);
+		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
 		Assert.assertTrue(result);
 	}
 

@@ -8,6 +8,9 @@ public class EmployeePayrollData {
 	public double salary;
 	public LocalDate startDate;
 	public String gender;
+	public String companyName;
+	public int companyId;
+	public String department[];
 
 	public EmployeePayrollData(Integer id, String name, Double salary) {
 		this.id = id;
@@ -25,6 +28,30 @@ public class EmployeePayrollData {
 		this.gender = gender;
 	}
 
+	public EmployeePayrollData(int id, String name, String gender, double salary, LocalDate startDate,
+			String companyName, int companyId, String department[]) {
+		this(id, name, gender, salary, startDate);
+		this.companyName = companyName;
+		this.companyId = companyId;
+		this.department = department;
+	}
+
+	public String[] getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(String[] department) {
+		this.department = department;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
 		return "id= " + id + ", name= " + name + ", salary= " + salary;
@@ -38,5 +65,12 @@ public class EmployeePayrollData {
 			return false;
 		EmployeePayrollData that = (EmployeePayrollData) o;
 		return id == that.id && Double.compare(that.salary, salary) == 0 && name.equals(that.name);
+	}
+
+	public void printDepartments() {
+		String departments[] = this.getDepartment();
+		for (String s : departments) {
+			System.out.println("id: " + this.getId() + ":" + s);
+		}
 	}
 }

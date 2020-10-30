@@ -29,6 +29,24 @@ public class EmployeePayrollData {
 	}
 
 	public EmployeePayrollData(int id, String name, String gender, double salary, LocalDate startDate,
+			String companyName, int companyId) {
+		this(id, name, gender, salary, startDate);
+		this.companyName = companyName;
+		this.companyId = companyId;
+	}
+
+	public EmployeePayrollData(int id, String name, String gender, int companyId, String companyName, double salary,
+			LocalDate startDate) {
+		this.id = id;
+		this.name = name;
+		this.gender = gender;
+		this.companyId = companyId;
+		this.companyName = companyName;
+		this.salary = salary;
+		this.startDate = startDate;
+	}
+
+	public EmployeePayrollData(int id, String name, String gender, double salary, LocalDate startDate,
 			String companyName, int companyId, String department[]) {
 		this(id, name, gender, salary, startDate);
 		this.companyName = companyName;

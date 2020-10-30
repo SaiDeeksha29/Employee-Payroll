@@ -92,13 +92,13 @@ public class EmployeePayrollService {
 	public List<EmployeePayrollData> readPayrollDataForRange(IOService ioService, LocalDate startDate,
 			LocalDate endDate) {
 		if (ioService.equals(IOService.DB_IO))
-			this.employeePayrollList = employeePayrollDBService.getEmployeeForDateRange(startDate, endDate);
+			this.employeePayrollList = employeePayrollDBServiceNormalised.getEmployeeForDateRange(startDate, endDate);
 		return employeePayrollList;
 	}
 
 	public Map<String, Double> readPayrollDataForAvgSalary(IOService ioService) {
 		if (ioService.equals(IOService.DB_IO))
-			this.employeePayrollMap = employeePayrollDBService.getAverageSalaryByGender();
+			this.employeePayrollMap = employeePayrollDBServiceNormalised.getAverageSalaryByGender();
 		return employeePayrollMap;
 	}
 

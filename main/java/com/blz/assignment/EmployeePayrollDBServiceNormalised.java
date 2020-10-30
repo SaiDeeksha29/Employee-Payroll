@@ -52,9 +52,7 @@ public class EmployeePayrollDBServiceNormalised {
 				String companyName = resultSet.getString("company_Name");
 				String dept = resultSet.getString("department_name");
 				double salary = resultSet.getDouble("basic_pay");
-				System.out.println(dept);
 				department.add(dept);
-				System.out.println(id);
 				String[] departmentArray = new String[department.size()];
 				employeePayrollList.add(new EmployeePayrollData(id, name, gender, salary, startDate, companyName,
 						companyId, department.toArray(departmentArray)));
@@ -107,6 +105,63 @@ public class EmployeePayrollDBServiceNormalised {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+
+	public List<EmployeePayrollData> getEmployeeForDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format(
+				"SELECT * FROM employee_payroll2 WHERE start BETWEEN CAST('2018-01-01' AS DATE) AND DATE(NOW());",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getEmployeePayrollDataUsingDB(sql);
+	}
+
+	private List<EmployeePayrollData> getEmployeePayrollDataNormalised(ResultSet resultSet) {
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		try {
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				int companyId = resultSet.getInt("company_id");
+				String name = resultSet.getString("name");
+				String gender = resultSet.getString("gender");
+				LocalDate startDate = resultSet.getDate("start").toLocalDate();
+				String companyName = resultSet.getString("company_Name");
+				double salary = resultSet.getDouble("salary");
+				employeePayrollList
+						.add(new EmployeePayrollData(id, name, gender, salary, startDate, companyName, companyId));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+
+	private List<EmployeePayrollData> getEmployeePayrollDataUsingDB(String sql) {
+		ResultSet resultSet;
+		List<EmployeePayrollData> employeePayrollList = null;
+		try (Connection connection = this.getConnection();) {
+			PreparedStatement prepareStatement = connection.prepareStatement(sql);
+			resultSet = prepareStatement.executeQuery(sql);
+			employeePayrollList = this.getEmployeePayrollDataNormalised(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+
+	public Map<String, Double> getAverageSalaryByGender() {
+		String sql = "SELECT gender,AVG(salary) as avg_salary FROM employee_payroll2 GROUP BY gender;";
+		Map<String, Double> genderToAverageSalaryMap = new HashMap<>();
+		try (Connection connection = this.getConnection();) {
+			PreparedStatement prepareStatement = connection.prepareStatement(sql);
+			ResultSet resultSet = prepareStatement.executeQuery(sql);
+			while (resultSet.next()) {
+				String gender = resultSet.getString("gender");
+				double salary = resultSet.getDouble("avg_salary");
+				genderToAverageSalaryMap.put(gender, salary);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return genderToAverageSalaryMap;
 	}
 
 	private Connection getConnection() throws SQLException {

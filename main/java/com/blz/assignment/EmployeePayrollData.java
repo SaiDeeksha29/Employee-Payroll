@@ -13,6 +13,7 @@ public class EmployeePayrollData {
 	public String department[];
 	public int departmentId;
 	public String departmentName;
+	public boolean is_active;
 
 	public EmployeePayrollData(Integer id, String name, Double salary) {
 		this.id = id;
@@ -47,6 +48,12 @@ public class EmployeePayrollData {
 		this(id, name, gender, salary, startDate);
 		this.companyName = companyName;
 		this.companyId = companyId;
+	}
+
+	public EmployeePayrollData(int id, String name, String gender, double salary, LocalDate startDate,
+			String companyName, int companyId, boolean is_active) {
+		this(id, name, gender, salary, startDate, companyName, companyId);
+		this.is_active = is_active;
 	}
 
 	public EmployeePayrollData(int id, String name, String gender, int companyId, String companyName, double salary,

@@ -102,6 +102,12 @@ public class EmployeePayrollService {
 		return employeePayrollMap;
 	}
 
+	public List<EmployeePayrollData> readPayrollDataForActiveEmployees(IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.employeePayrollList = employeePayrollDBServiceNormalised.getActiveEmployees();
+		return employeePayrollList;
+	}
+
 	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
 		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayrollUC8(name, salary, startDate, gender));
 	}

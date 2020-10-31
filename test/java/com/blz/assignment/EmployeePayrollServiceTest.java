@@ -80,17 +80,25 @@ public class EmployeePayrollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollDataForRange(IOService.DB_IO,
 				startDate, endDate);
-		Assert.assertEquals(6, employeePayrollData.size());
+		Assert.assertEquals(5, employeePayrollData.size());
 	}
 
 	@Test
 	public void givenNewEmployeeInNormalised_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
 		employeePayrollService.readPayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayrollNormalised("Mark", "M", 3, "Capgemini", 5000000.00,
-				LocalDate.now());
+		employeePayrollService.addEmployeeToPayrollNormalised("Mark", "M", 3, "Capgemini", 5000000.00, LocalDate.now());
 		boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		Assert.assertTrue(result);
+	}
+
+	@Test
+	public void givenEmployeePayrollData_ShouldReturn_ActiveEmployees() {
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readPayrollData(IOService.DB_IO);
+		List<EmployeePayrollData> employeePayrollData = employeePayrollService
+				.readPayrollDataForActiveEmployees(IOService.DB_IO);
+		Assert.assertEquals(4, employeePayrollData.size());
 	}
 
 }

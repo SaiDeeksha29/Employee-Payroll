@@ -270,6 +270,45 @@ public class EmployeePayrollDBServiceNormalised {
 		}
 		return employeePayrollData;
 	}
+	
+	public List<EmployeePayrollData> getActiveEmployees() {
+		String sql = "select * from employee_payroll2 where is_active=1;";
+		return this.getEmployeePayrollDataUsingDBActive(sql);
+	}
+	
+	private List<EmployeePayrollData> getEmployeePayrollDataNormalisedActive(ResultSet resultSet) {
+		List<EmployeePayrollData> employeePayrollList = new ArrayList<>();
+		try {
+			while (resultSet.next()) {
+				int id = resultSet.getInt("id");
+				int companyId = resultSet.getInt("company_id");
+				String name = resultSet.getString("name");
+				String gender = resultSet.getString("gender");
+				LocalDate startDate = resultSet.getDate("start").toLocalDate();
+				String companyName = resultSet.getString("company_Name");
+				double salary = resultSet.getDouble("salary");
+				boolean is_active=resultSet.getBoolean("is_active");
+				employeePayrollList
+						.add(new EmployeePayrollData(id, name, gender, salary, startDate, companyName, companyId, is_active));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
+	
+	private List<EmployeePayrollData> getEmployeePayrollDataUsingDBActive(String sql) {
+		ResultSet resultSet;
+		List<EmployeePayrollData> employeePayrollList = null;
+		try (Connection connection = this.getConnection();) {
+			PreparedStatement prepareStatement = connection.prepareStatement(sql);
+			resultSet = prepareStatement.executeQuery(sql);
+			employeePayrollList = this.getEmployeePayrollDataNormalisedActive(resultSet);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
 
 	private Connection getConnection() throws SQLException {
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";

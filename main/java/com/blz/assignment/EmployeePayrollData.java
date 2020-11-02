@@ -1,6 +1,7 @@
 package com.blz.assignment;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public class EmployeePayrollData {
 	public int id;
@@ -89,6 +90,11 @@ public class EmployeePayrollData {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, gender, salary, startDate);
 	}
 
 	@Override

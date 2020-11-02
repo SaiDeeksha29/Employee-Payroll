@@ -1,6 +1,5 @@
 package com.blz.assignment;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
@@ -8,7 +7,7 @@ import java.util.logging.Logger;
 public class EmployeePayrollService {
 
 	private static Logger log = Logger.getLogger(EmployeePayrollService.class.getName());
-	
+
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
@@ -34,11 +33,11 @@ public class EmployeePayrollService {
 	}
 
 	private void readEmployeePayrollData(Scanner consoleInputReader) {
-		System.out.println("Enter the employee ID : ");
+		log.info("Enter the employee ID : ");
 		int id = consoleInputReader.nextInt();
-		System.out.println("Enter the employee name : ");
+		log.info("Enter the employee name : ");
 		String name = consoleInputReader.next();
-		System.out.println("Enter the employee's salary : ");
+		log.info("Enter the employee's salary : ");
 		double salary = consoleInputReader.nextDouble();
 
 		employeePayrollList.add(new EmployeePayrollData(id, name, salary));
@@ -46,7 +45,7 @@ public class EmployeePayrollService {
 
 	public void writeEmployeePayrollData(IOService ioService) {
 		if (ioService.equals(IOService.CONSOLE_IO))
-			System.out.println("Writing Employee payroll data on Console: " + employeePayrollList);
+			log.info("Writing Employee payroll data on Console: " + employeePayrollList);
 		else if (ioService.equals(IOService.FILE_IO))
 			new EmployeePayrollFileIOService().writeData(employeePayrollList);
 
@@ -122,21 +121,45 @@ public class EmployeePayrollService {
 				company_name, salary, startDate));
 	}
 
+	public void addEmployeeToPayroll(List<EmployeePayrollData> employeePayrollDataList) {
+		employeePayrollDataList.forEach(employeePayrollData -> {
+			log.info("Employee being added : " + employeePayrollData.name);
+			this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.gender, employeePayrollData.salary,
+					employeePayrollData.startDate);
+			log.info("Employee added : " + employeePayrollData.name);
+		});
+		log.info("" + this.employeePayrollList);
+	}
+
+	public void addEmployeeToPayrollWithThreads(List<EmployeePayrollData> employeePayrollDataList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<>();
+		employeePayrollDataList.forEach(employeePayrollData -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), false);
+				log.info("Employee being added : " + Thread.currentThread().getName());
+				this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.gender,
+						employeePayrollData.salary, employeePayrollData.startDate);
+				employeeAdditionStatus.put(employeePayrollData.hashCode(), true);
+				log.info("Employee added : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, employeePayrollData.name);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+		}
+		log.info("" + this.employeePayrollList);
+	}
+
 	public static void main(String[] args) {
 		ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<>();
 		EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
 		Scanner consoleInputReader = new Scanner(System.in);
 		employeePayrollService.readEmployeePayrollData(consoleInputReader);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
-	}
-	
-	public void addEmployeeToPayroll(List<EmployeePayrollData> employeePayrollDataList){
-		employeePayrollDataList.forEach(employeePayrollData ->{
-			log.info("Employee being added : "+employeePayrollData.name);
-			this.addEmployeeToPayroll(employeePayrollData.name,employeePayrollData.gender, employeePayrollData.salary, employeePayrollData.startDate);
-			log.info("Employee added : "+employeePayrollData.name);
-		});
-		log.info(""+this.employeePayrollList);
 	}
 
 }

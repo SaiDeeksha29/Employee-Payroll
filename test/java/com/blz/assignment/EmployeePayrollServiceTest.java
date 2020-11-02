@@ -84,7 +84,7 @@ public class EmployeePayrollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollDataForRange(IOService.DB_IO,
 				startDate, endDate);
-		Assert.assertEquals(11, employeePayrollData.size());
+		Assert.assertEquals(17, employeePayrollData.size());
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.readPayrollData(IOService.DB_IO);
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService
 				.readPayrollDataForActiveEmployees(IOService.DB_IO);
-		Assert.assertEquals(10, employeePayrollData.size());
+		Assert.assertEquals(16, employeePayrollData.size());
 	}
 
 	@Test
@@ -119,7 +119,11 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.addEmployeeToPayroll(Arrays.asList(arrayOfEmployee));
 		Instant end = Instant.now();
 		log.info("Duration without thread : " + Duration.between(start, end));
-		Assert.assertEquals(12, employeePayrollService.countEntries(IOService.DB_IO));
+		Instant threadStart = Instant.now();
+		employeePayrollService.addEmployeeToPayrollWithThreads(Arrays.asList(arrayOfEmployee));
+		Instant threadEnd = Instant.now();
+		log.info("Duartion with Thread : "+Duration.between(threadStart, threadEnd));
+		Assert.assertEquals(18, employeePayrollService.countEntries(IOService.DB_IO));
 	}
 
 }

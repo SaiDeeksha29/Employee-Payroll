@@ -4,9 +4,12 @@ import java.sql.*;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class EmployeePayrollDBService {
 
+	private static Logger log = Logger.getLogger(EmployeePayrollService.class.getName());
+	
 	private static EmployeePayrollDBService employeePayrollDBService;
 	private PreparedStatement employeePayrollDataStatement;
 
@@ -156,9 +159,9 @@ public class EmployeePayrollDBService {
 		String userName = "root";
 		String password = "satyasai1";
 		Connection connection;
-		System.out.println("Connecting to database: " + jdbcURL);
+		log.info("Connecting to database: " + jdbcURL);
 		connection = DriverManager.getConnection(jdbcURL, userName, password);
-		System.out.println("Connection successful: " + connection);
+		log.info("Connection successful: " + connection);
 		return connection;
 	}
 

@@ -1,10 +1,14 @@
 package com.blz.assignment;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class EmployeePayrollService {
 
+	private static Logger log = Logger.getLogger(EmployeePayrollService.class.getName());
+	
 	public enum IOService {
 		CONSOLE_IO, FILE_IO, DB_IO, REST_IO
 	}
@@ -56,7 +60,7 @@ public class EmployeePayrollService {
 	public long countEntries(IOService ioService) {
 		if (ioService.equals(IOService.FILE_IO))
 			return new EmployeePayrollFileIOService().countEntries();
-		return 0;
+		return employeePayrollList.size();
 	}
 
 	public List<EmployeePayrollData> readPayrollData(IOService ioService) {
@@ -108,8 +112,8 @@ public class EmployeePayrollService {
 		return employeePayrollList;
 	}
 
-	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
-		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayrollUC8(name, salary, startDate, gender));
+	public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate) {
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name, gender, salary, startDate));
 	}
 
 	public void addEmployeeToPayrollNormalised(String name, String gender, int company_id, String company_name,
@@ -124,6 +128,15 @@ public class EmployeePayrollService {
 		Scanner consoleInputReader = new Scanner(System.in);
 		employeePayrollService.readEmployeePayrollData(consoleInputReader);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
+	}
+	
+	public void addEmployeeToPayroll(List<EmployeePayrollData> employeePayrollDataList){
+		employeePayrollDataList.forEach(employeePayrollData ->{
+			log.info("Employee being added : "+employeePayrollData.name);
+			this.addEmployeeToPayroll(employeePayrollData.name,employeePayrollData.gender, employeePayrollData.salary, employeePayrollData.startDate);
+			log.info("Employee added : "+employeePayrollData.name);
+		});
+		log.info(""+this.employeePayrollList);
 	}
 
 }

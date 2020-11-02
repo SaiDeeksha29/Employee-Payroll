@@ -2,15 +2,19 @@ package com.blz.assignment;
 
 import org.junit.Assert;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
+import java.util.logging.Logger;
 import org.junit.Test;
 import com.blz.assignment.EmployeePayrollService.IOService;
 
 public class EmployeePayrollServiceTest {
+
+	private static Logger log = Logger.getLogger(EmployeePayrollServiceTest.class.getName());
 
 	@Test
 	public void given3EmployeesShouldMatchEmployeeEntries() {
@@ -80,7 +84,7 @@ public class EmployeePayrollServiceTest {
 		LocalDate endDate = LocalDate.now();
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService.readPayrollDataForRange(IOService.DB_IO,
 				startDate, endDate);
-		Assert.assertEquals(5, employeePayrollData.size());
+		Assert.assertEquals(11, employeePayrollData.size());
 	}
 
 	@Test
@@ -98,7 +102,24 @@ public class EmployeePayrollServiceTest {
 		employeePayrollService.readPayrollData(IOService.DB_IO);
 		List<EmployeePayrollData> employeePayrollData = employeePayrollService
 				.readPayrollDataForActiveEmployees(IOService.DB_IO);
-		Assert.assertEquals(4, employeePayrollData.size());
+		Assert.assertEquals(10, employeePayrollData.size());
+	}
+
+	@Test
+	public void givenEmployees_WhenAddedToDB_ShouldMatchEmployeeEntries() {
+		EmployeePayrollData[] arrayOfEmployee = { new EmployeePayrollData(0, "Jeff", "M", 100000.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Bill", "M", 200000.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Mahesh", "M", 400000.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Mukesh", "M", 300000.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Sunder", "M", 500000.0, LocalDate.now()),
+				new EmployeePayrollData(0, "Anil", "M", 100000.0, LocalDate.now()) };
+		EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+		employeePayrollService.readPayrollData(IOService.DB_IO);
+		Instant start = Instant.now();
+		employeePayrollService.addEmployeeToPayroll(Arrays.asList(arrayOfEmployee));
+		Instant end = Instant.now();
+		log.info("Duration without thread : " + Duration.between(start, end));
+		Assert.assertEquals(12, employeePayrollService.countEntries(IOService.DB_IO));
 	}
 
 }

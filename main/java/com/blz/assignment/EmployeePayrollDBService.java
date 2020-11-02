@@ -160,11 +160,14 @@ public class EmployeePayrollDBService {
 		String userName = "root";
 		String password = "satyasai1";
 		Connection connection;
+		log.info("Processing Thread : " + Thread.currentThread().getName() + "Connecting to database : " + jdbcURL);
 		connection = DriverManager.getConnection(jdbcURL, userName, password);
+		log.info("Processing Thread : " + Thread.currentThread().getName() + " ID : " + connectionCounter
+				+ " Connection is successful! " + connection);
 		return connection;
 	}
 
-	public EmployeePayrollData addEmployeeToPayrollUC8(String name, double salary, LocalDate startDate, String gender) {
+	public EmployeePayrollData addEmployeeToPayrollUC8(String name, String gender, double salary, LocalDate startDate) {
 		int employeeId = -1;
 		Connection connection = null;
 		EmployeePayrollData employeePayrollData = null;

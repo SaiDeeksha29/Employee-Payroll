@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 public class EmployeePayrollDBService {
 
 	private static Logger log = Logger.getLogger(EmployeePayrollService.class.getName());
-	
+	private int connectionCounter = 0;
 	private static EmployeePayrollDBService employeePayrollDBService;
 	private PreparedStatement employeePayrollDataStatement;
 
@@ -154,14 +154,16 @@ public class EmployeePayrollDBService {
 		return employeePayrollData;
 	}
 
-	private Connection getConnection() throws SQLException {
+	private synchronized Connection getConnection() throws SQLException {
+		connectionCounter++;
 		String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
 		String userName = "root";
 		String password = "satyasai1";
 		Connection connection;
-		log.info("Connecting to database: " + jdbcURL);
+		log.info("Processing Thread : " + Thread.currentThread().getName() + "Connecting to database : " + jdbcURL);
 		connection = DriverManager.getConnection(jdbcURL, userName, password);
-		log.info("Connection successful: " + connection);
+		log.info("Processing Thread : " + Thread.currentThread().getName() + " ID : " + connectionCounter
+				+ " Connection is successful! " + connection);
 		return connection;
 	}
 

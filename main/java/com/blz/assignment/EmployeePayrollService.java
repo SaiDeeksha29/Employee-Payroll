@@ -29,7 +29,7 @@ public class EmployeePayrollService {
 
 	public EmployeePayrollService(List<EmployeePayrollData> employeePayrollList) {
 		this();
-		this.employeePayrollList = employeePayrollList;
+		this.employeePayrollList = new ArrayList<>(employeePayrollList);
 	}
 
 	private void readEmployeePayrollData(Scanner consoleInputReader) {
@@ -70,6 +70,14 @@ public class EmployeePayrollService {
 		return employeePayrollList;
 	}
 
+	public void addEmployeePayroll(EmployeePayrollData employeePayrollData, IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.addEmployeeToPayroll(employeePayrollData.name, employeePayrollData.gender, employeePayrollData.salary,
+					employeePayrollData.startDate);
+		else
+			employeePayrollList.add(employeePayrollData);
+	}
+
 	public void updateEmployeeSalary(String name, double salary) {
 		int result = employeePayrollDBService.updateEmployeeData(name, salary);
 		if (result == 0)
@@ -78,7 +86,7 @@ public class EmployeePayrollService {
 		if (employeePayrollData != null)
 			employeePayrollData.salary = salary;
 	}
-	
+
 	public void updateMultipleEmployeesSalary(Map<String, Double> employeeSalaryMap) {
 		Map<Integer, Boolean> salaryUpdateStatus = new HashMap<>();
 		employeeSalaryMap.forEach((employee, salary) -> {
@@ -180,5 +188,4 @@ public class EmployeePayrollService {
 		employeePayrollService.readEmployeePayrollData(consoleInputReader);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
 	}
-
 }

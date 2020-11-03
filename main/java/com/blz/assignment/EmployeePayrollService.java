@@ -71,17 +71,36 @@ public class EmployeePayrollService {
 	}
 
 	public void updateEmployeeSalary(String name, double salary) {
-		int result = employeePayrollDBServiceNormalised.updateEmployeeData(name, salary);
+		int result = employeePayrollDBService.updateEmployeeData(name, salary);
 		if (result == 0)
 			return;
 		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
 		if (employeePayrollData != null)
 			employeePayrollData.salary = salary;
 	}
+	
+	public void updateMultipleEmployeesSalary(Map<String, Double> employeeSalaryMap) {
+		Map<Integer, Boolean> salaryUpdateStatus = new HashMap<>();
+		employeeSalaryMap.forEach((employee, salary) -> {
+			Runnable salaryUpdate = () -> {
+				salaryUpdateStatus.put(employee.hashCode(), false);
+				this.updateEmployeeSalary(employee, salary);
+				salaryUpdateStatus.put(employee.hashCode(), true);
+			};
+			Thread thread = new Thread(salaryUpdate, employee);
+			thread.start();
+		});
+		while (salaryUpdateStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	public boolean checkEmployeePayrollInSyncWithDB(String name) {
-		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBServiceNormalised
-				.getEmployeePayrollData(name);
+		List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 

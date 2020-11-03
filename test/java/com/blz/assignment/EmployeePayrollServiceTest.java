@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -104,7 +105,7 @@ public class EmployeePayrollServiceTest {
 				.readPayrollDataForActiveEmployees(IOService.DB_IO);
 		Assert.assertEquals(16, employeePayrollData.size());
 	}
-
+	
 	@Test
 	public void givenEmployees_WhenAddedToDB_ShouldMatchEmployeeEntries() {
 		EmployeePayrollData[] arrayOfEmployee = { new EmployeePayrollData(0, "Jeff", "M", 100000.0, LocalDate.now()),
@@ -124,6 +125,22 @@ public class EmployeePayrollServiceTest {
 		Instant threadEnd = Instant.now();
 		log.info("Duartion with Thread : "+Duration.between(threadStart, threadEnd));
 		Assert.assertEquals(18, employeePayrollService.countEntries(IOService.DB_IO));
+	}
+	
+	@Test
+	public void givenNewSalariesForMultipleEmployee_WhenUpdated_ShouldSyncWithDB() {
+			EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+			employeePayrollService.readPayrollData(IOService.DB_IO);
+			Map<String, Double> employeeSalaryMap = new HashMap<>();
+			Instant threadStart = Instant.now();
+			employeeSalaryMap.put("Jeff", 2000000.00);
+			employeeSalaryMap.put("Bill", 2000000.00);
+			employeeSalaryMap.put("Mukesh", 3000000.00);
+			employeePayrollService.updateMultipleEmployeesSalary(employeeSalaryMap);
+			Instant threadEnd = Instant.now();
+			log.info("Duartion with Thread : "+Duration.between(threadStart, threadEnd));
+			boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Bill");
+			Assert.assertTrue(result);
 	}
 
 }

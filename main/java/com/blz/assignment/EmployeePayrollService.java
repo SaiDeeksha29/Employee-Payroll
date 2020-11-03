@@ -112,11 +112,9 @@ public class EmployeePayrollService {
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 
-	private EmployeePayrollData getEmployeePayrollData(String name) {
-		EmployeePayrollData employeePayrollData;
-		employeePayrollData = this.employeePayrollList.stream()
+	public EmployeePayrollData getEmployeePayrollData(String name) {
+		return this.employeePayrollList.stream()
 				.filter(employeePayrollDataItem -> employeePayrollDataItem.name.equals(name)).findFirst().orElse(null);
-		return employeePayrollData;
 	}
 
 	public List<EmployeePayrollData> readPayrollDataForRange(IOService ioService, LocalDate startDate,
@@ -187,5 +185,16 @@ public class EmployeePayrollService {
 		Scanner consoleInputReader = new Scanner(System.in);
 		employeePayrollService.readEmployeePayrollData(consoleInputReader);
 		employeePayrollService.writeEmployeePayrollData(IOService.CONSOLE_IO);
+	}
+
+	public void updateEmployeeSalary(String name, double salary, IOService ioService) {
+		if (ioService.equals(IOService.REST_IO)) {
+			int result = employeePayrollDBService.updateEmployeeData(name, salary);
+			if (result == 0)
+				return;
+		}
+		EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+		if (employeePayrollData != null)
+			employeePayrollData.salary = salary;
 	}
 }
